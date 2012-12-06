@@ -1,5 +1,5 @@
 exports.routes = (map) ->
 
-    map.get 'bookmarks', 'bookmarks#all'
-    map.post 'bookmarks', 'bookmarks#create'
-    map.del 'bookmarks/:id', 'bookmarks#destroy'
+    map.get 'accounts', 'accounts#all'
+    map.post 'accounts', 'accounts#create'
+    map.del 'accounts/:id', 'accounts#destroy'

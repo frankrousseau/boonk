@@ -1,3 +1,4 @@
-Note = define 'Bookmark', ->
-    property 'title', String
-    property 'url', String
+Account = define 'Account', ->
+    property 'bank', String
+    property 'login', String
+    property 'password', String
