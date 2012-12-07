@@ -74,29 +74,57 @@
   globals.require.brunch = true;
 })();
 
-window.require.define({"collections/bookmark_collection": function(exports, require, module) {
-  var Bookmark, BookmarkCollection,
+window.require.define({"collections/account_collection": function(exports, require, module) {
+  var Account, AccountCollection,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  Bookmark = require('../models/bookmark');
+  Account = require('../models/account');
 
-  module.exports = BookmarkCollection = (function(_super) {
+  module.exports = AccountCollection = (function(_super) {
 
-    __extends(BookmarkCollection, _super);
+    __extends(AccountCollection, _super);
 
-    BookmarkCollection.prototype.model = Bookmark;
+    AccountCollection.prototype.model = Account;
 
-    BookmarkCollection.prototype.url = 'bookmarks';
+    AccountCollection.prototype.url = 'accounts';
 
-    function BookmarkCollection(view) {
+    function AccountCollection(view) {
       this.view = view;
-      BookmarkCollection.__super__.constructor.call(this);
+      AccountCollection.__super__.constructor.call(this);
       this.bind("add", this.view.renderOne);
       this.bind("reset", this.view.renderAll);
     }
 
-    return BookmarkCollection;
+    return AccountCollection;
+
+  })(Backbone.Collection);
+  
+}});
+
+window.require.define({"collections/balance_collection": function(exports, require, module) {
+  var Balance, BalanceCollection,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Balance = require('../models/balance');
+
+  module.exports = BalanceCollection = (function(_super) {
+
+    __extends(BalanceCollection, _super);
+
+    BalanceCollection.prototype.model = Balance;
+
+    BalanceCollection.prototype.url = 'balances';
+
+    function BalanceCollection(view) {
+      this.view = view;
+      BalanceCollection.__super__.constructor.call(this);
+      this.bind("add", this.view.renderOne);
+      this.bind("reset", this.view.renderAll);
+    }
+
+    return BalanceCollection;
 
   })(Backbone.Collection);
   
@@ -353,30 +381,55 @@ window.require.define({"lib/view_collection": function(exports, require, module)
   
 }});
 
-window.require.define({"models/bookmark": function(exports, require, module) {
-  var Bookmark,
+window.require.define({"models/account": function(exports, require, module) {
+  var Account,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  module.exports = Bookmark = (function(_super) {
+  module.exports = Account = (function(_super) {
 
-    __extends(Bookmark, _super);
+    __extends(Account, _super);
 
-    function Bookmark() {
-      return Bookmark.__super__.constructor.apply(this, arguments);
+    function Account() {
+      return Account.__super__.constructor.apply(this, arguments);
     }
 
-    Bookmark.prototype.url = 'bookmarks';
+    Account.prototype.rootUrl = 'accounts';
 
-    Bookmark.prototype.initialize = function() {
-      return this.url += "/" + this.id;
-    };
+    Account.prototype.initialize = function() {};
 
-    Bookmark.prototype.isNew = function() {
+    Account.prototype.isNew = function() {
       return !(this.id != null);
     };
 
-    return Bookmark;
+    return Account;
+
+  })(Backbone.Model);
+  
+}});
+
+window.require.define({"models/balance": function(exports, require, module) {
+  var Balance,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  module.exports = Balance = (function(_super) {
+
+    __extends(Balance, _super);
+
+    function Balance() {
+      return Balance.__super__.constructor.apply(this, arguments);
+    }
+
+    Balance.prototype.rootUrl = 'balances';
+
+    Balance.prototype.initialize = function() {};
+
+    Balance.prototype.isNew = function() {
+      return !(this.id != null);
+    };
+
+    return Balance;
 
   })(Backbone.Model);
   
@@ -405,8 +458,91 @@ window.require.define({"routers/app_router": function(exports, require, module) 
   
 }});
 
+window.require.define({"views/account_view": function(exports, require, module) {
+  var AccountView, View,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  View = require('../lib/view');
+
+  module.exports = AccountView = (function(_super) {
+
+    __extends(AccountView, _super);
+
+    AccountView.prototype.className = 'account';
+
+    AccountView.prototype.tagName = 'div';
+
+    AccountView.prototype.events = {
+      'click .delete-button': 'onDeleteClicked'
+    };
+
+    function AccountView(model) {
+      this.model = model;
+      AccountView.__super__.constructor.call(this);
+    }
+
+    AccountView.prototype.template = function() {
+      var template;
+      template = require('./templates/account');
+      return template(this.getRenderData());
+    };
+
+    AccountView.prototype.onDeleteClicked = function() {
+      var _this = this;
+      this.$('.delete-button').html("deleting...");
+      return this.model.destroy({
+        success: function() {
+          return _this.destroy();
+        },
+        error: function() {
+          alert("Server error occured, account was not deleted.");
+          return _this.$('.delete-button').html("delete");
+        }
+      });
+    };
+
+    return AccountView;
+
+  })(View);
+  
+}});
+
+window.require.define({"views/accounts_view": function(exports, require, module) {
+  var AccountCollection, AccountView, AccountsView, ViewCollection,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  ViewCollection = require('../lib/view_collection');
+
+  AccountView = require('./account_view');
+
+  AccountCollection = require('../collections/account_collection');
+
+  module.exports = AccountsView = (function(_super) {
+
+    __extends(AccountsView, _super);
+
+    function AccountsView() {
+      return AccountsView.__super__.constructor.apply(this, arguments);
+    }
+
+    AccountsView.prototype.el = '#account-list';
+
+    AccountsView.prototype.view = AccountView;
+
+    AccountsView.prototype.initialize = function() {
+      return this.collection = new AccountCollection(this);
+    };
+
+    return AccountsView;
+
+  })(ViewCollection);
+  
+}});
+
 window.require.define({"views/app_view": function(exports, require, module) {
-  var AppRouter, AppView, Bookmark, BookmarksView, View,
+  var Account, AccountsView, AppRouter, AppView, BalancesView, View,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -415,15 +551,19 @@ window.require.define({"views/app_view": function(exports, require, module) {
 
   AppRouter = require('../routers/app_router');
 
-  BookmarksView = require('./bookmarks_view');
+  AccountsView = require('./accounts_view');
 
-  Bookmark = require('../models/bookmark');
+  Account = require('../models/account');
+
+  BalancesView = require('./balances_view');
 
   module.exports = AppView = (function(_super) {
 
     __extends(AppView, _super);
 
     function AppView() {
+      this.onBalanceClicked = __bind(this.onBalanceClicked, this);
+
       this.onCreateClicked = __bind(this.onCreateClicked, this);
       return AppView.__super__.constructor.apply(this, arguments);
     }
@@ -431,7 +571,8 @@ window.require.define({"views/app_view": function(exports, require, module) {
     AppView.prototype.el = 'body.application';
 
     AppView.prototype.events = {
-      'click .create-button': 'onCreateClicked'
+      'click .create-button': 'onCreateClicked',
+      'click .balance-button': 'onBalanceClicked'
     };
 
     AppView.prototype.template = function() {
@@ -444,36 +585,50 @@ window.require.define({"views/app_view": function(exports, require, module) {
 
     AppView.prototype.afterRender = function() {
       var _this = this;
-      this.bookmarksView = new BookmarksView();
-      this.bookmarksView.$el.html('<em>loading...</em>');
-      return this.bookmarksView.collection.fetch({
+      this.accountsView = new AccountsView();
+      this.balancesView = new BalancesView();
+      this.accountsView.$el.html('<em>loading...</em>');
+      return this.accountsView.collection.fetch({
         success: function() {
-          return _this.bookmarksView.$el.find('em').remove();
+          return _this.accountsView.$el.find('em').remove();
         }
       });
     };
 
     AppView.prototype.onCreateClicked = function() {
-      var bookmark, title, url,
+      var account, bank, login, password,
         _this = this;
-      title = $('.title-field').val();
-      url = $('.url-field').val();
-      if ((title != null ? title.length : void 0) > 0 && (url != null ? url.length : void 0) > 0) {
-        bookmark = new Bookmark({
-          title: title,
-          url: url
+      bank = $('.bank-field').val();
+      login = $('.login-field').val();
+      password = $('.password-field').val();
+      if ((bank != null ? bank.length : void 0) > 0 && (login != null ? login.length : void 0) > 0 && (password != null ? password.length : void 0) > 0) {
+        account = new Account({
+          bank: bank,
+          login: login,
+          password: password
         });
-        return this.bookmarksView.collection.create(bookmark, {
+        return this.accountsView.collection.create(account, {
           success: function() {
-            return alert("bookmark added");
+            return alert("account added");
           },
           error: function() {
-            return alert("Server error occured, bookmark was not saved");
+            return alert("Server error occured, account was not saved");
           }
         });
       } else {
         return alert('Both fields are required');
       }
+    };
+
+    AppView.prototype.onBalanceClicked = function() {
+      var _this = this;
+      this.balancesView.clear();
+      this.balancesView.$el.html('<em>loading...</em>');
+      return this.balancesView.collection.fetch({
+        success: function() {
+          return _this.balancesView.$el.find('em').remove();
+        }
+      });
     };
 
     return AppView;
@@ -482,98 +637,94 @@ window.require.define({"views/app_view": function(exports, require, module) {
   
 }});
 
-window.require.define({"views/bookmark_view": function(exports, require, module) {
-  var BookmarkView, View,
+window.require.define({"views/balance_view": function(exports, require, module) {
+  var BalanceView, View,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   View = require('../lib/view');
 
-  module.exports = BookmarkView = (function(_super) {
+  module.exports = BalanceView = (function(_super) {
 
-    __extends(BookmarkView, _super);
+    __extends(BalanceView, _super);
 
-    BookmarkView.prototype.className = 'bookmark';
+    BalanceView.prototype.className = 'balance';
 
-    BookmarkView.prototype.tagName = 'div';
+    BalanceView.prototype.tagName = 'div';
 
-    BookmarkView.prototype.events = {
-      'click .delete-button': 'onDeleteClicked'
-    };
-
-    function BookmarkView(model) {
+    function BalanceView(model) {
       this.model = model;
-      BookmarkView.__super__.constructor.call(this);
+      BalanceView.__super__.constructor.call(this);
     }
 
-    BookmarkView.prototype.template = function() {
+    BalanceView.prototype.template = function() {
       var template;
-      template = require('./templates/bookmark');
+      template = require('./templates/balance');
       return template(this.getRenderData());
     };
 
-    BookmarkView.prototype.onDeleteClicked = function() {
-      var _this = this;
-      this.$('.delete-button').html("deleting...");
-      return this.model.destroy({
-        success: function() {
-          return _this.destroy();
-        },
-        error: function() {
-          alert("Server error occured, bookmark was not deleted.");
-          return _this.$('.delete-button').html("delete");
-        }
-      });
-    };
-
-    return BookmarkView;
+    return BalanceView;
 
   })(View);
   
 }});
 
-window.require.define({"views/bookmarks_view": function(exports, require, module) {
-  var BookmarkCollection, BookmarkView, BookmarksView, ViewCollection,
+window.require.define({"views/balances_view": function(exports, require, module) {
+  var BalanceCollection, BalanceView, BalancesView, ViewCollection,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   ViewCollection = require('../lib/view_collection');
 
-  BookmarkView = require('./bookmark_view');
+  BalanceView = require('./balance_view');
 
-  BookmarkCollection = require('../collections/bookmark_collection');
+  BalanceCollection = require('../collections/balance_collection');
 
-  module.exports = BookmarksView = (function(_super) {
+  module.exports = BalancesView = (function(_super) {
 
-    __extends(BookmarksView, _super);
+    __extends(BalancesView, _super);
 
-    function BookmarksView() {
-      return BookmarksView.__super__.constructor.apply(this, arguments);
+    function BalancesView() {
+      return BalancesView.__super__.constructor.apply(this, arguments);
     }
 
-    BookmarksView.prototype.el = '#bookmark-list';
+    BalancesView.prototype.el = '#balance-list';
 
-    BookmarksView.prototype.view = BookmarkView;
+    BalancesView.prototype.view = BalanceView;
 
-    BookmarksView.prototype.initialize = function() {
-      return this.collection = new BookmarkCollection(this);
+    BalancesView.prototype.initialize = function() {
+      return this.collection = new BalanceCollection(this);
     };
 
-    return BookmarksView;
+    BalancesView.prototype.clear = function() {
+      return this.$el.html(null);
+    };
+
+    return BalancesView;
 
   })(ViewCollection);
   
 }});
 
-window.require.define({"views/templates/bookmark": function(exports, require, module) {
+window.require.define({"views/templates/account": function(exports, require, module) {
   module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
   attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div class="title">' + escape((interp = model.title) == null ? '' : interp) + '</div><div class="url"> <a');
-  buf.push(attrs({ 'href':("" + (model.url) + "") }, {"href":true}));
-  buf.push('>' + escape((interp = model.url) == null ? '' : interp) + '</a></div><button class="delete-button">delete</button>');
+  buf.push('<div class="bank">' + escape((interp = model.bank) == null ? '' : interp) + '</div><div class="login">' + escape((interp = model.login) == null ? '' : interp) + '</div><button class="delete-button">delete</button>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/balance": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
+  attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div class="bank">' + escape((interp = model.bank) == null ? '' : interp) + '</div><div class="label">' + escape((interp = model.label) == null ? '' : interp) + '</div><div class="balance">' + escape((interp = model.balance) == null ? '' : interp) + '</div>');
   }
   return buf.join("");
   };
@@ -585,7 +736,7 @@ window.require.define({"views/templates/home": function(exports, require, module
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div id="content"> <h1>My bookmarks </h1><div id="create-bookmark-form"><input placeholder="title" class="title-field"/><input placeholder="url" class="url-field"/><button class="btn create-button">create</button></div><div id="bookmark-list"></div></div>');
+  buf.push('<div id="content"> <h1>Boonk</h1><div id="create-account-form"><input placeholder="bank" class="bank-field"/><input placeholder="login" class="login-field"/><input placeholder="password" type="password" class="password-field"/><button class="btn create-button">create</button></div><div id="account-list"></div><button class="btn balance-button">display account balances</button><div id="balance-list"></div></div>');
   }
   return buf.join("");
   };

@@ -1,7 +1,7 @@
 View = require '../lib/view'
 
-module.exports = class BookmarkView extends View
-    className: 'bookmark'
+module.exports = class AccountView extends View
+    className: 'account'
     tagName: 'div'
 
     events:
@@ -11,7 +11,7 @@ module.exports = class BookmarkView extends View
         super()
 
     template: ->
-        template = require './templates/bookmark'
+        template = require './templates/account'
         template @getRenderData()
 
     onDeleteClicked: ->
@@ -19,5 +19,5 @@ module.exports = class BookmarkView extends View
         @model.destroy
             success: => @destroy()
             error: =>
-                alert "Server error occured, bookmark was not deleted."
+                alert "Server error occured, account was not deleted."
                 @$('.delete-button').html "delete"

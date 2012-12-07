@@ -872,13 +872,13 @@ cursor not-allowed {
 #content {
   padding: 2em;
 }
-#bookmark-list {
+#account-list {
   padding: 2em;
 }
-#bookmark-list .bookmark {
+#account-list .account {
   margin: 1em 0;
 }
-#bookmark-list .bookmark .title {
+#account-list .account .title {
   font-weight: bold;
 }
 .chromeframe { margin: 0.2em 0; background: #ccc; color: #000; padding: 0.2em 0; }
