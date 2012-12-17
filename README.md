@@ -2,6 +2,8 @@
 
 Aggregate all your bank account data.
 
+[Icon infos](http://www.iconfinder.com/icondetails/17018/128/cash_lock_money_safe_vault_icon)
+
 # About Cozy
 
 This app is suited to be deployed on the Cozy platform. Cozy is the personal
