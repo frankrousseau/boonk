@@ -869,6 +869,12 @@ cursor not-allowed {
     width: 1170px;
   }
 }
+body {
+  background: radial-gradient(ellipse at center, #4c4c4c 0%, #4c4c4c 0%, #595959 0%, #666 0%, #474747 23%, #111 56%, #131313 100%);
+  color: #ddd;
+  text-align: center;
+  padding-top: 14%;
+}
 #content {
   padding: 2em;
 }
