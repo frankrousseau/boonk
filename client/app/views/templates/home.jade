@@ -1,12 +1,64 @@
 #content 
     h1 Boonk
+    h2 ton argent dans ton cloud
+    hr
+    h3 Ajouter un compte
     #create-account-form
-        input.bank-field(placeholder="bank")
-        input.login-field(placeholder="login")
-        input.password-field(placeholder="password", type="password")
-        button.btn.create-button create
+        .btn-group.pull-left
+            a.btn.dropdown-toggle.bank-field(data-toggle="dropdown", href="#")
+                | Choisis ta banque
+            span.caret &nbsp;
+            ul.dropdown-menu
+                li 
+                    a(href="#") Axa Banque
+                li
+                    a(href="#") Barclays
+                li
+                    a(href="#") BNP Paribas
+                li
+                    a(href="#") Barclays
+                li
+                    a(href="#") Boursorama
+                li
+                    a(href="#") Banque Populaire
+                li
+                    a(href="#") Banque Postale
+                li
+                    a(href="#") Bred
+                li
+                    a(href="#") Caisse d'Epargne
+                li
+                    a(href="#") Carrefour Banque
+                li
+                    a(href="#") CIC
+                li
+                    a(href="#") Crédit Agricole
+                li
+                    a(href="#") Credit Coopératif
+                li
+                    a(href="#") Crédit Mutuel
+                li
+                    a(href="#") Crédit Mutuel Bretagne
+                li
+                    a(href="#") Crédit Mutuel Sud Ouest
+                li
+                    a(href="#") Fortuneo
+                li
+                    a(href="#") Ganassurances
+                li
+                    a(href="#") HSBC
+                li
+                    a(href="#") ING
+                li
+                    a(href="#") LCL
+                li
+                    a(href="#") Société Générale
+    input.login-field(placeholder="ton login").pull-left
+    input.password-field(placeholder="ton mot de passe", type="password").pull-left
+    button.btn.create-button.btn-info ajouter
+
+    hr
+    h3 Tes comptes
+
     div#account-list
-
-
-    button.btn.balance-button display account balances
     div#balance-list
