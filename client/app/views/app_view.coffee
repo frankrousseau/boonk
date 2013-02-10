@@ -1,31 +1,9 @@
 View = require '../lib/view'
+banks = require('../lib/banks').banks
 AppRouter = require '../routers/app_router'
 AccountsView = require './accounts_view'
 Account = require '../models/account'
 BalancesView = require './balances_view'
-
-banks =
-    "Axa Banque":"axabanque"
-    "Banque Populaire":"banquepopulaire"
-    "Barclays":"barclays"
-    "BNP Paribas":"bnpporc"
-    "Boursorama":"boursorama"
-    "Banque Postale":"bp"
-    "Bred":"bred"
-    "Caisse d'Epargne":"caissedepargne"
-    "Carrefour Banque":"carrefourbanque"
-    "CIC":"cic"
-    "Crédit Agricole":"cragr"
-    "Credit Coopératif":"creditcooperatif"
-    "Crédit Mutuel":"creditmutuel"
-    "Crédit Mutuel Bretagne":"cmb"
-    "Crédit Mutuel Sud Ouest":"cmso"
-    "Fortuneo":"fortuneo"
-    "Gan Assurances":"ganassurances"
-    "HSBC":"hsbc"
-    "ING":"ing"
-    "LCL":"lcl"
-    "Société Générale":"societegenerale"
 
 module.exports = class AppView extends View
     el: 'body.application'
@@ -47,7 +25,7 @@ module.exports = class AppView extends View
         @accountsView = new AccountsView()
         @balancesView = new BalancesView()
         
-        @accountsView.$el.html '<em>loading...</em>'
+        @accountsView.$el.html '<em>chargement...</em>'
         @accountsView.collection.fetch
             success: => @accountsView.$el.find('em').remove()
         @onBalanceClicked()
@@ -68,7 +46,7 @@ module.exports = class AppView extends View
                     @onBalanceClicked()
                 error: => alert "Server error occured, account was not saved"
         else
-            alert 'Both fields are required'
+            alert "Tous les champs doivent être remplis"
 
 
     onBalanceClicked: =>

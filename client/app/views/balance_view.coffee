@@ -2,7 +2,7 @@ View = require '../lib/view'
 
 module.exports = class BalanceView extends View
     className: 'balance'
-    tagName: 'div'
+    tagName: 'tr'
 
     constructor: (@model) ->
         super()

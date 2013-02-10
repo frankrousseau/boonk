@@ -187,6 +187,44 @@ window.require.register("lib/app_helpers", function(exports, require, module) {
   })();
   
 });
+window.require.register("lib/banks", function(exports, require, module) {
+  var acronym, bank, banks, reversed_banks;
+
+  banks = {
+    "Axa Banque": "axabanque",
+    "Banque Populaire": "banquepopulaire",
+    "Barclays": "barclays",
+    "BNP Paribas": "bnpporc",
+    "Boursorama": "boursorama",
+    "Banque Postale": "bp",
+    "Bred": "bred",
+    "Caisse d'Epargne": "caissedepargne",
+    "Carrefour Banque": "carrefourbanque",
+    "CIC": "cic",
+    "Crédit Agricole": "cragr",
+    "Credit Coopératif": "creditcooperatif",
+    "Crédit Mutuel": "creditmutuel",
+    "Crédit Mutuel Bretagne": "cmb",
+    "Crédit Mutuel Sud Ouest": "cmso",
+    "Fortuneo": "fortuneo",
+    "Gan Assurances": "ganassurances",
+    "HSBC": "hsbc",
+    "ING": "ing",
+    "LCL": "lcl"
+  };
+
+  reversed_banks = {};
+
+  for (bank in banks) {
+    acronym = banks[bank];
+    reversed_banks[acronym] = bank;
+  }
+
+  module.exports.banks = banks;
+
+  module.exports.reversed_banks = reversed_banks;
+  
+});
 window.require.register("lib/view", function(exports, require, module) {
   var View,
     __hasProp = {}.hasOwnProperty,
@@ -381,9 +419,11 @@ window.require.register("lib/view_collection", function(exports, require, module
   
 });
 window.require.register("models/account", function(exports, require, module) {
-  var Account,
+  var Account, reversed_banks,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  reversed_banks = require('../lib/banks').reversed_banks;
 
   module.exports = Account = (function(_super) {
 
@@ -395,7 +435,9 @@ window.require.register("models/account", function(exports, require, module) {
 
     Account.prototype.rootUrl = 'accounts';
 
-    Account.prototype.initialize = function() {};
+    Account.prototype.initialize = function() {
+      return this.set("bankName", reversed_banks[this.get("bank")]);
+    };
 
     Account.prototype.isNew = function() {
       return !(this.id != null);
@@ -407,9 +449,11 @@ window.require.register("models/account", function(exports, require, module) {
   
 });
 window.require.register("models/balance", function(exports, require, module) {
-  var Balance,
+  var Balance, reversed_banks,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  reversed_banks = require('../lib/banks').reversed_banks;
 
   module.exports = Balance = (function(_super) {
 
@@ -421,7 +465,9 @@ window.require.register("models/balance", function(exports, require, module) {
 
     Balance.prototype.rootUrl = 'balances';
 
-    Balance.prototype.initialize = function() {};
+    Balance.prototype.initialize = function() {
+      return this.set("bankName", reversed_banks[this.get("bank")]);
+    };
 
     Balance.prototype.isNew = function() {
       return !(this.id != null);
@@ -486,7 +532,7 @@ window.require.register("views/account_view", function(exports, require, module)
 
     AccountView.prototype.onDeleteClicked = function() {
       var _this = this;
-      this.$('.delete-button').html("deleting...");
+      this.$('.delete-button').html("suppression...");
       return this.model.destroy({
         success: function() {
           return _this.destroy();
@@ -543,6 +589,8 @@ window.require.register("views/app_view", function(exports, require, module) {
 
   View = require('../lib/view');
 
+  banks = require('../lib/banks').banks;
+
   AppRouter = require('../routers/app_router');
 
   AccountsView = require('./accounts_view');
@@ -550,30 +598,6 @@ window.require.register("views/app_view", function(exports, require, module) {
   Account = require('../models/account');
 
   BalancesView = require('./balances_view');
-
-  banks = {
-    "Axa Banque": "axabanque",
-    "Banque Populaire": "banquepopulaire",
-    "Barclays": "barclays",
-    "BNP Paribas": "bnpporc",
-    "Boursorama": "boursorama",
-    "Banque Postale": "bp",
-    "Bred": "bred",
-    "Caisse d'Epargne": "caissedepargne",
-    "Carrefour Banque": "carrefourbanque",
-    "CIC": "cic",
-    "Crédit Agricole": "cragr",
-    "Credit Coopératif": "creditcooperatif",
-    "Crédit Mutuel": "creditmutuel",
-    "Crédit Mutuel Bretagne": "cmb",
-    "Crédit Mutuel Sud Ouest": "cmso",
-    "Fortuneo": "fortuneo",
-    "Gan Assurances": "ganassurances",
-    "HSBC": "hsbc",
-    "ING": "ing",
-    "LCL": "lcl",
-    "Société Générale": "societegenerale"
-  };
 
   module.exports = AppView = (function(_super) {
 
@@ -608,7 +632,7 @@ window.require.register("views/app_view", function(exports, require, module) {
       });
       this.accountsView = new AccountsView();
       this.balancesView = new BalancesView();
-      this.accountsView.$el.html('<em>loading...</em>');
+      this.accountsView.$el.html('<em>chargement...</em>');
       this.accountsView.collection.fetch({
         success: function() {
           return _this.accountsView.$el.find('em').remove();
@@ -639,7 +663,7 @@ window.require.register("views/app_view", function(exports, require, module) {
           }
         });
       } else {
-        return alert('Both fields are required');
+        return alert("Tous les champs doivent être remplis");
       }
     };
 
@@ -672,7 +696,7 @@ window.require.register("views/balance_view", function(exports, require, module)
 
     BalanceView.prototype.className = 'balance';
 
-    BalanceView.prototype.tagName = 'div';
+    BalanceView.prototype.tagName = 'tr';
 
     function BalanceView(model) {
       this.model = model;
@@ -732,7 +756,7 @@ window.require.register("views/templates/account", function(exports, require, mo
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div class="bank">' + escape((interp = model.bank) == null ? '' : interp) + '</div><div class="login">' + escape((interp = model.login) == null ? '' : interp) + '</div><button class="delete-button">delete</button>');
+  buf.push('<div class="bank pull-left label">' + escape((interp = model.bankName) == null ? '' : interp) + '</div><div class="login pull-left label">' + escape((interp = model.login) == null ? '' : interp) + '</div><button class="btn delete-button pull-left">enlever</button>');
   }
   return buf.join("");
   };
@@ -743,7 +767,7 @@ window.require.register("views/templates/balance", function(exports, require, mo
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div class="bank">' + escape((interp = model.bank) == null ? '' : interp) + '</div><div class="label">' + escape((interp = model.label) == null ? '' : interp) + '</div><div class="balance">' + escape((interp = model.balance) == null ? '' : interp) + '</div>');
+  buf.push('<td class="bank">' + escape((interp = model.bankName) == null ? '' : interp) + '</td><td class="account-name">' + escape((interp = model.label) == null ? '' : interp) + '</td><td class="balance">' + escape((interp = model.balance) == null ? '' : interp) + '</td>');
   }
   return buf.join("");
   };
@@ -754,7 +778,7 @@ window.require.register("views/templates/home", function(exports, require, modul
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div id="content"> <h1>Boonk</h1><h2>ton argent dans ton cloud</h2><hr/><h3>Ajouter un compte</h3><div id="create-account-form"><div class="btn-group pull-left"><a data-toggle="dropdown" href="#" class="btn dropdown-toggle bank-field">Choisis ta banque</a><span class="caret">&nbsp;</span><ul class="dropdown-menu"><li> <a href="#">Axa Banque</a></li><li><a href="#">Barclays</a></li><li><a href="#">BNP Paribas</a></li><li><a href="#">Barclays</a></li><li><a href="#">Boursorama</a></li><li><a href="#">Banque Populaire</a></li><li><a href="#">Banque Postale</a></li><li><a href="#">Bred</a></li><li><a href="#">Caisse d\'Epargne</a></li><li><a href="#">Carrefour Banque</a></li><li><a href="#">CIC</a></li><li><a href="#">Crédit Agricole</a></li><li><a href="#">Credit Coopératif</a></li><li><a href="#">Crédit Mutuel</a></li><li><a href="#">Crédit Mutuel Bretagne</a></li><li><a href="#">Crédit Mutuel Sud Ouest</a></li><li><a href="#">Fortuneo</a></li><li><a href="#">Ganassurances</a></li><li><a href="#">HSBC</a></li><li><a href="#">ING</a></li><li><a href="#">LCL</a></li><li><a href="#">Société Générale</a></li></ul></div></div><input placeholder="ton login" class="login-field pull-left"/><input placeholder="ton mot de passe" type="password" class="password-field pull-left"/><button class="btn create-button btn-info">ajouter</button><hr/><h3>Tes comptes</h3><div id="account-list"></div><div id="balance-list"></div></div>');
+  buf.push('<div id="content"> <h1>Boonk</h1><h2>ton argent dans ton cloud</h2><hr/><h3>Tes banques</h3><div id="create-account-form" class="inline-form"><div class="btn-group pull-left"><a data-toggle="dropdown" href="#" class="btn dropdown-toggle bank-field">ta banque</a><ul class="dropdown-menu"><li> <a href="#">Axa Banque</a></li><li><a href="#">Barclays</a></li><li><a href="#">BNP Paribas</a></li><li><a href="#">Barclays</a></li><li><a href="#">Boursorama</a></li><li><a href="#">Banque Populaire</a></li><li><a href="#">Banque Postale</a></li><li><a href="#">Bred</a></li><li><a href="#">Caisse d\'Epargne</a></li><li><a href="#">Carrefour Banque</a></li><li><a href="#">CIC</a></li><li><a href="#">Crédit Agricole</a></li><li><a href="#">Credit Coopératif</a></li><li><a href="#">Crédit Mutuel</a></li><li><a href="#">Crédit Mutuel Bretagne</a></li><li><a href="#">Crédit Mutuel Sud Ouest</a></li><li><a href="#">Fortuneo</a></li><li><a href="#">Ganassurances</a></li><li><a href="#">HSBC</a></li><li><a href="#">ING</a></li><li><a href="#">LCL</a></li><li><a href="#">Société Générale</a></li></ul></div><input type="text" placeholder="ton login" class="login-field input-small"/><input placeholder="ton mot de passe" type="password" class="password-field input-small"/><button class="btn create-button btn-info">ajouter</button></div><div id="account-list" class="clearfix"></div><hr/><h3>Tes comptes</h3><table id="balance-list" class="table table-condensed table-bordered"></table></div>');
   }
   return buf.join("");
   };

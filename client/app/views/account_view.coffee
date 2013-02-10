@@ -15,7 +15,7 @@ module.exports = class AccountView extends View
         template @getRenderData()
 
     onDeleteClicked: ->
-        @$('.delete-button').html "deleting..."
+        @$('.delete-button').html "suppression..."
         @model.destroy
             success: => @destroy()
             error: =>

@@ -2,12 +2,11 @@
     h1 Boonk
     h2 ton argent dans ton cloud
     hr
-    h3 Ajouter un compte
-    #create-account-form
+    h3 Tes banques
+    #create-account-form.inline-form
         .btn-group.pull-left
             a.btn.dropdown-toggle.bank-field(data-toggle="dropdown", href="#")
-                | Choisis ta banque
-            span.caret &nbsp;
+                | ta banque
             ul.dropdown-menu
                 li 
                     a(href="#") Axa Banque
@@ -53,12 +52,12 @@
                     a(href="#") LCL
                 li
                     a(href="#") Société Générale
-    input.login-field(placeholder="ton login").pull-left
-    input.password-field(placeholder="ton mot de passe", type="password").pull-left
-    button.btn.create-button.btn-info ajouter
+        input.login-field.input-small(type="text", placeholder="ton login")
+        input.password-field.input-small(placeholder="ton mot de passe", type="password")
+        button.btn.create-button.btn-info ajouter
+
+    div#account-list.clearfix
 
     hr
     h3 Tes comptes
-
-    div#account-list
-    div#balance-list
+    table#balance-list.table.table-condensed.table-bordered

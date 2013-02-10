@@ -10,43 +10,62 @@
 @import '_layout'
 @import '_responsive'
 
+
+@font-face 
+    font-family: main
+    src: url('/fonts/signika-regular.ttf')
+
 body
-    background: #111
+    background: #738182
     color: #DDD
-    padding-top: 14%
+    padding-top: 9%
+    font-family: main
 
 h1 
     font-size: 50px
     
-#account-list
-    padding: 2em
-    
-    .account
-        margin: 1em 0
+
+.btn
+    background: buttoncolor
+    border: 1px solid buttoncolor - 20%
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 1px 2px rgba(0, 0, 0, 0.05)
+    margin: 0
 
 #content
     padding: 2em
+    background: #6A7575
+    border-radius: 10px
+    margin: 20px
+    box-shadow: 10px 10px 10px #6A7575 - 30%
+
 
     .dropdown-toggle
-        width: 300px
-        font-size: 20px
-        padding: 10px
+        width: 180px
+        margin-right: 5px
+        text-align: left
 
     input
-        margin 0
-        font-size: 20px
-        padding: 5px
-
-    .password-field
-        font-size: 20px
-        margin-top: 2px
-        margin-left: 5px
+        padding: 3px
+        height: 30px
+        line-height: 30px
+        margin-bottom: 0
         margin-right: 5px
-        padding: 10px
-        height: 40px
+        width: 150px
+ 
+#account-list
+    padding: 0
+    margin-top: 10px
 
+    .bank
+        width: 180px
 
-    button.btn
-        font-size: 20px
-        padding: 9px
-        margin-top: 2px
+    .login
+        width: 150px
+
+    .label
+        margin-right: 5px
+        margin-top: 1px
+        padding: 7px
+        background: #DDD
+        color: #111
+        text-shadow: none
