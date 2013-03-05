@@ -22,6 +22,7 @@ action 'create', ->
     data =
         bank: req.body.bank
         bankName: req.body.bankName
+        login: req.body.login
     BankAccount.create data, (err, account) =>
         account.createAccount req.body, (err, bookmark) =>
             if err
