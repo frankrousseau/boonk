@@ -14,7 +14,7 @@ action 'all', ->
      BankAccount.all (err, bookmarks) ->
         if err
             railway.logger.write err
-            send error: true, msg: "Server error while creating account.", 500
+            send error: true,  msg: "occured while retrieving data."
         else
             send bookmarks
 
@@ -24,12 +24,15 @@ action 'create', ->
         bankName: req.body.bankName
         login: req.body.login
     BankAccount.create data, (err, account) =>
-        account.createAccount req.body, (err, bookmark) =>
-            if err
-                railway.logger.write err
-                send error: true, msg: "Server error while creating account.", 500
-            else
-                send account
+        if err
+            send error: true, "Server error while creating account.", 500
+        else
+            account.createAccount req.body, (err, bookmark) =>
+                if err
+                    railway.logger.write err
+                    send error: true, msg: "Server error while creating account.", 500
+                else
+                    send account
 
 action 'destroy', ->
     @account.destroyAccount (err) =>
@@ -42,7 +45,7 @@ action 'destroy', ->
                     railway.logger.write err
                     send error: 'Cannot destroy account', 500
                 else
-                    send success: 'Bookmark succesfuly deleted'
+                    send success: 'Account succesfuly deleted'
 
 action 'balances', ->
     client = new Client 'http://localhost:9101/'
@@ -52,24 +55,24 @@ action 'balances', ->
         if bankAccounts.length > 0
             bankAccount = bankAccounts.pop()
             bankAccount.getAccount (error, account) =>
-                    if error
-                        callback err
-                    else
-                        path = "connectors/bank/#{account.bank}/"
-                        client.post path, account, (err, res, body) ->
-                            for line in body[account.bank]
-                                line.bank = account.bank
-                                balances.push line
-                            loadBalances bankAccounts, callback
+                if error
+                    callback err
+                else
+                    path = "connectors/bank/#{bankAccount.bank}/"
+                    client.post path, account, (err, res, body) ->
+                        for line in body[account.bank]
+                            line.bank = account.bank
+                            balances.push line
+                        loadBalances bankAccounts, callback
         else
             callback()
 
-    BankAccount.all (err, bookmarks) ->
+    BankAccount.all (err, accounts) ->
         if err
             railway.logger.write err
-            send error: true, msg: "Server error while creating account.", 500
+            send error: true,  msg: "occured while retrieving data."
         else
-            loadBalances bookmarks, ->
+            loadBalances accounts, ->
                 send balances
 
 
