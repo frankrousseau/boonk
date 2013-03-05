@@ -2,21 +2,21 @@
 Client = require('request-json').JsonClient
 
 before ->
-    BankAccount.find req.params.id, (err, bookmark) =>
-        if err or !bookmark
+    BankAccount.find req.params.id, (err, account) =>
+        if err or !account
             send error: true, msg: "Account not found", 404
         else
-            @account = bookmark
+            @account = account
             next()
 , only: ['destroy']
 
 action 'all', ->
-     BankAccount.all (err, bookmarks) ->
+     BankAccount.all (err, accounts) ->
         if err
             railway.logger.write err
             send error: true,  msg: "occured while retrieving data."
         else
-            send bookmarks
+            send accounts
 
 action 'create', ->
     data =
