@@ -1,59 +1,78 @@
+
 Client = require('request-json').JsonClient
 
 before ->
-    Account.find req.params.id, (err, bookmark) =>
-        if err or !bookmark
+    BankAccount.find req.params.id, (err, account) =>
+        if err or !account
             send error: true, msg: "Account not found", 404
         else
-            @account = bookmark
+            @account = account
             next()
 , only: ['destroy']
 
-
 action 'all', ->
-    Account.all (err, bookmarks) ->
+     BankAccount.all (err, accounts) ->
         if err
             railway.logger.write err
-            send error: true, msg: "Server error occured while retrieving data."
+            send error: true,  msg: "occured while retrieving data."
         else
-            send bookmarks
+            send accounts
 
 action 'create', ->
-    Account.create req.body, (err, bookmark) =>
+    data =
+        bank: req.body.bank
+        bankName: req.body.bankName
+        login: req.body.login
+    BankAccount.create data, (err, account) =>
         if err
-            railway.logger.write err
-            send error: true, msg: "Server error while creating account.", 500
+            send error: true, "Server error while creating account.", 500
         else
-            send bookmark
+            account.createAccount req.body, (err, bookmark) =>
+                if err
+                    railway.logger.write err
+                    send error: true, msg: "Server error while creating account.", 500
+                else
+                    send account
 
 action 'destroy', ->
-    @account.destroy (err) ->
+    @account.destroyAccount (err) =>
         if err
             railway.logger.write err
             send error: 'Cannot destroy account', 500
         else
-            send success: 'Bookmark succesfuly deleted'
+            @account.destroy (err) =>
+                if err
+                    railway.logger.write err
+                    send error: 'Cannot destroy account', 500
+                else
+                    send success: 'Account succesfuly deleted'
 
 action 'balances', ->
     client = new Client 'http://localhost:9101/'
     balances = []
 
-    loadBalances = (accounts, callback) ->
-        if accounts.length > 0
-            account = accounts.pop()
-            path = "connectors/bank/#{account.bank}/"
-            client.post path, account, (err, res, body) ->
-                for line in body[account.bank]
-                    line.bank = account.bank
-                    balances.push line
-                loadBalances accounts, callback
+    loadBalances = (bankAccounts, callback) ->
+        if bankAccounts.length > 0
+            bankAccount = bankAccounts.pop()
+            bankAccount.getAccount (error, account) =>
+                if error
+                    callback err
+                else
+                    path = "connectors/bank/#{bankAccount.bank}/"
+                    client.post path, account, (err, res, body) ->
+                        for line in body[account.bank]
+                            line.bank = account.bank
+                            balances.push line
+                        loadBalances bankAccounts, callback
         else
             callback()
 
-    Account.all (err, accounts) ->
+    BankAccount.all (err, accounts) ->
         if err
             railway.logger.write err
-            send error: true, msg: "Server error while creating account.", 500
+            send error: true,  msg: "occured while retrieving data."
         else
             loadBalances accounts, ->
                 send balances
+
+
