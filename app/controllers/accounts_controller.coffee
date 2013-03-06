@@ -1,4 +1,3 @@
-
 Client = require('request-json').JsonClient
 
 before ->
@@ -54,8 +53,9 @@ action 'balances', ->
     loadBalances = (bankAccounts, callback) ->
         if bankAccounts.length > 0
             bankAccount = bankAccounts.pop()
-            bankAccount.getAccount (error, account) =>
-                if error
+            bankAccount.getAccount (err, account) =>
+                if err
+                    console.log err
                     callback err
                 else
                     path = "connectors/bank/#{bankAccount.bank}/"
@@ -70,9 +70,7 @@ action 'balances', ->
     BankAccount.all (err, accounts) ->
         if err
             railway.logger.write err
-            send error: true,  msg: "occured while retrieving data."
         else
+            send error: true,  msg: "occured while retrieving data."
             loadBalances accounts, ->
                 send balances
-
-
