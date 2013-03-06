@@ -1,2 +1,2 @@
-Account.all = (params, callback) ->
-    Account.request "all", params, callback
+BankAccount.all = (params, callback) ->
+    BankAccount.request "all", params, callback

@@ -1,4 +1,4 @@
-Account = define 'Account', ->
+BankAccount = define 'BankAccount', ->
     property 'bank', String
     property 'login', String
-    property 'password', String
+    property 'account', String

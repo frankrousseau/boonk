@@ -21,10 +21,10 @@ module.exports = class AppView extends View
     afterRender: ->
         @$(".dropdown-menu a").click ->
             $(".dropdown-toggle").html $(@).html()
-            
+
         @accountsView = new AccountsView()
         @balancesView = new BalancesView()
-        
+
         @accountsView.$el.html '<em>chargement...</em>'
         @accountsView.collection.fetch
             success: => @accountsView.$el.find('em').remove()

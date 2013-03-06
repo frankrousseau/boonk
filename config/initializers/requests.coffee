@@ -1,7 +1,6 @@
 all = ->
     emit doc.title, doc
-    
-Account.defineRequest "all", all, (err) ->
+BankAccount.defineRequest "all", all, (err) ->
     if err
         railway.logger.write "Bookmark All requests, cannot be created"
         railway.logger.write err
