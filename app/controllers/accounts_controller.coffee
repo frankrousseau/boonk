@@ -1,9 +1,13 @@
 Client = require('request-json').JsonClient
 
+sendError = (send, msg, code=500) ->
+    send error: true, msg: msg, code
+
+
 before ->
     BankAccount.find req.params.id, (err, account) =>
         if err or !account
-            send error: true, msg: "Account not found", 404
+            sendError send, "Account not found", 404
         else
             @account = account
             next()
@@ -13,38 +17,40 @@ action 'all', ->
      BankAccount.all (err, accounts) ->
         if err
             railway.logger.write err
-            send error: true,  msg: "occured while retrieving data."
+            sendError send, "Server error occured while retrieving data."
         else
             send accounts
 
 action 'create', ->
     data =
-        bank: req.body.bank
-        bankName: req.body.bankName
-        login: req.body.login
-    BankAccount.create data, (err, account) =>
+        bank: body.bank
+        bankName: body.bankName
+        login: body.login
+    BankAccount.create data, (err, bankAccount) =>
         if err
-            send error: true, "Server error while creating account.", 500
+            sendError send, "Server error while creating account.", 500
         else
-            account.createAccount req.body, (err, bookmark) =>
+            bankAccount.createAccount body, (err, account) =>
                 if err
                     railway.logger.write err
-                    send error: true, msg: "Server error while creating account.", 500
+                    bankAccount.delete ->
+                        sendError send, "Server error while creating account."
                 else
                     send account
 
 action 'destroy', ->
     @account.destroyAccount (err) =>
+        # No need to stop the request here, if the account cannot be destroyed
+        # most of the time, it means that the account does not exist.
         if err
             railway.logger.write err
-            send error: 'Cannot destroy account', 500
-        else
-            @account.destroy (err) =>
-                if err
-                    railway.logger.write err
-                    send error: 'Cannot destroy account', 500
-                else
-                    send success: 'Account succesfuly deleted'
+
+        @account.destroy (err) =>
+            if err
+                railway.logger.write err
+                send error: 'Cannot destroy account', 500
+            else
+                send success: 'Account succesfuly deleted'
 
 action 'balances', ->
     client = new Client 'http://localhost:9101/'
@@ -71,6 +77,5 @@ action 'balances', ->
         if err
             railway.logger.write err
         else
-            send error: true,  msg: "occured while retrieving data."
             loadBalances accounts, ->
                 send balances
