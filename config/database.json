@@ -1,5 +1,5 @@
 { "development":
-  { "driver":   "jugglingdb-cozy-adapter"
+  { "driver":   "../../libs/jugglingdb-cozy-adapter"
   }
 , "test":
   { "driver":   "jugglingdb-cozy-adapter"

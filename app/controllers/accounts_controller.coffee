@@ -57,7 +57,7 @@ action 'balances', ->
     balances = []
 
     loadBalances = (bankAccounts, callback) ->
-        if bankAccounts.length > 0
+        if bankAccounts?.length > 0
             bankAccount = bankAccounts.pop()
             bankAccount.getAccount (err, account) =>
                 if err
@@ -66,10 +66,13 @@ action 'balances', ->
                 else
                     path = "connectors/bank/#{bankAccount.bank}/"
                     client.post path, account, (err, res, body) ->
-                        for line in body[account.bank]
-                            line.bank = account.bank
-                            balances.push line
-                        loadBalances bankAccounts, callback
+                        if err or res.statusCode is 400
+                            callback new Error "Can't get account balances."
+                        else
+                            for line in body[account.bank]
+                                line.bank = account.bank
+                                balances.push line
+                            loadBalances bankAccounts, callback
         else
             callback()
 
