@@ -69,8 +69,8 @@ action 'balances', ->
                         if err or res.statusCode is 400
                             callback new Error "Can't get account balances."
                         else
-                            for line in body[account.bank]
-                                line.bank = account.bank
+                            for line in body[bankAccount.bank]
+                                line.bank = bankAccount.bank
                                 balances.push line
                             loadBalances bankAccounts, callback
         else
