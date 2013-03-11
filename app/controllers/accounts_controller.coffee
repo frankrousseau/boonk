@@ -2,45 +2,45 @@
 Client = require('request-json').JsonClient
 
 before ->
-    BankAccount.find req.params.id, (err, account) =>
-        if err or !account
+    BankAccount.find req.params.id, (err, bankAccount) =>
+        if err or !bankAccount
             send error: true, msg: "Account not found", 404
         else
-            @account = account
+            @bankAccount = bankAccount
             next()
 , only: ['destroy']
 
 action 'all', ->
-     BankAccount.all (err, accounts) ->
+     BankAccount.all (err, bankAccounts) ->
         if err
             railway.logger.write err
             send error: true,  msg: "occured while retrieving data."
         else
-            send accounts
+            send bankAccounts
 
 action 'create', ->
     data =
         bank: req.body.bank
         bankName: req.body.bankName
         login: req.body.login
-    BankAccount.create data, (err, account) =>
+    BankAccount.create data, (err, bankAccount) =>
         if err
             send error: true, "Server error while creating account.", 500
         else
-            account.createAccount req.body, (err, bookmark) =>
+            bankAccount.createAccount req.body, (err, account) =>
                 if err
                     railway.logger.write err
                     send error: true, msg: "Server error while creating account.", 500
                 else
-                    send account
+                    send bankAccount
 
 action 'destroy', ->
-    @account.destroyAccount (err) =>
+    @bankAccount.destroyAccount (err) =>
         if err
             railway.logger.write err
             send error: 'Cannot destroy account', 500
         else
-            @account.destroy (err) =>
+            @bankAccount.destroy (err) =>
                 if err
                     railway.logger.write err
                     send error: 'Cannot destroy account', 500
@@ -56,7 +56,20 @@ action 'balances', ->
             bankAccount = bankAccounts.pop()
             bankAccount.getAccount (error, account) =>
                 if error
-                    callback err
+                    console.log String(error)
+                    if String(error) is "Error: Data are corrupted"
+                        bankAccount.destroyAccount (err) =>
+                            if err
+                                callback err
+                            else
+                                bankAccount.destroy (err) =>
+                                    if err
+                                        callback err
+                                    else
+                                        loadBalances bankAccounts, callback
+                    else
+                        console.log error
+                        callback error
                 else
                     path = "connectors/bank/#{bankAccount.bank}/"
                     client.post path, account, (err, res, body) ->
@@ -67,12 +80,12 @@ action 'balances', ->
         else
             callback()
 
-    BankAccount.all (err, accounts) ->
+    BankAccount.all (err, bankAccounts) ->
         if err
             railway.logger.write err
             send error: true,  msg: "occured while retrieving data."
         else
-            loadBalances accounts, ->
+            loadBalances bankAccounts, ->
                 send balances
 
 
