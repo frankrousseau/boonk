@@ -3,7 +3,7 @@ Client = require('request-json').JsonClient
 
 before ->
     BankAccount.find req.params.id, (err, bankAccount) =>
-        if err or !bankAccount
+        if err or not bankAccount
             send error: true, msg: "Account not found", 404
         else
             @bankAccount = bankAccount
