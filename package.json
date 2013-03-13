@@ -1,5 +1,5 @@
 { "name": "cozy-template"
-, "version": "0.0.1"
+, "version": "0.5.0"
 , "engines": ["node = 0.8.x"]
 , "description": "A template project for cozy applications"
 , "repository":
@@ -19,7 +19,7 @@
   , "request-json":     "= 0.3.0"
   , "qs":               "= 0.5.0"
   , "jugglingdb":       "= 0.1.24-pre2"
-  , "jugglingdb-cozy-adapter": "0.3.0"
+  , "jugglingdb-cozy-adapter": "0.3.1"
   }
 , "devDependencies": 
   { "should":           "= 1.2.0"
