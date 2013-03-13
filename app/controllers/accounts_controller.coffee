@@ -5,21 +5,21 @@ sendError = (send, msg, code=500) ->
 
 
 before ->
-    BankAccount.find req.params.id, (err, account) =>
-        if err or !account
-            sendError send, "Account not found", 404
+    BankAccount.find req.params.id, (err, bankAccount) =>
+        if err or not bankAccount
+            send error: true, msg: "Account not found", 404
         else
-            @account = account
+            @bankAccount = bankAccount
             next()
 , only: ['destroy']
 
 action 'all', ->
-     BankAccount.all (err, accounts) ->
+     BankAccount.all (err, bankAccounts) ->
         if err
             railway.logger.write err
             sendError send, "Server error occured while retrieving data."
         else
-            send accounts
+            send bankAccounts
 
 action 'create', ->
     data =
@@ -36,21 +36,20 @@ action 'create', ->
                     bankAccount.delete ->
                         sendError send, "Server error while creating account."
                 else
-                    send account
+                    send bankAccount
 
 action 'destroy', ->
-    @account.destroyAccount (err) =>
-        # No need to stop the request here, if the account cannot be destroyed
-        # most of the time, it means that the account does not exist.
+    @bankAccount.destroyAccount (err) =>
         if err
             railway.logger.write err
-
-        @account.destroy (err) =>
-            if err
-                railway.logger.write err
-                send error: 'Cannot destroy account', 500
-            else
-                send success: 'Account succesfuly deleted'
+            send error: 'Cannot destroy account', 500
+        else
+            @bankAccount.destroy (err) =>
+                if err
+                    railway.logger.write err
+                    send error: 'Cannot destroy account', 500
+                else
+                    send success: 'Account succesfuly deleted'
 
 action 'balances', ->
     client = new Client 'http://localhost:9101/'
@@ -59,10 +58,22 @@ action 'balances', ->
     loadBalances = (bankAccounts, callback) ->
         if bankAccounts?.length > 0
             bankAccount = bankAccounts.pop()
-            bankAccount.getAccount (err, account) =>
-                if err
-                    console.log err
-                    callback err
+            bankAccount.getAccount (error, account) =>
+                if error
+                    console.log String(error)
+                    if String(error) is "Error: Data are corrupted"
+                        bankAccount.destroyAccount (err) =>
+                            if err
+                                callback err
+                            else
+                                bankAccount.destroy (err) =>
+                                    if err
+                                        callback err
+                                    else
+                                        loadBalances bankAccounts, callback
+                    else
+                        console.log error
+                        callback error
                 else
                     path = "connectors/bank/#{bankAccount.bank}/"
                     client.post path, account, (err, res, body) ->
@@ -76,9 +87,9 @@ action 'balances', ->
         else
             callback()
 
-    BankAccount.all (err, accounts) ->
+    BankAccount.all (err, bankAccounts) ->
         if err
             railway.logger.write err
         else
-            loadBalances accounts, ->
+            loadBalances bankAccounts, ->
                 send balances
