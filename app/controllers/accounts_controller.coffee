@@ -40,16 +40,16 @@ action 'create', ->
 
 action 'destroy', ->
     @bankAccount.destroyAccount (err) =>
-        if err
-            railway.logger.write err
-            send error: 'Cannot destroy account', 500
-        else
+        if !err || String(err) is "Error: The model doesn't have an account"
             @bankAccount.destroy (err) =>
                 if err
                     railway.logger.write err
                     send error: 'Cannot destroy account', 500
                 else
                     send success: 'Account succesfuly deleted'
+        else
+            railway.logger.write err
+            send error: 'Cannot destroy account', 500
 
 action 'balances', ->
     client = new Client 'http://localhost:9101/'
@@ -60,7 +60,6 @@ action 'balances', ->
             bankAccount = bankAccounts.pop()
             bankAccount.getAccount (error, account) =>
                 if error
-                    console.log String(error)
                     if String(error) is "Error: Data are corrupted"
                         bankAccount.destroyAccount (err) =>
                             if err
