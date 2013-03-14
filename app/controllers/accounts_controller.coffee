@@ -40,7 +40,7 @@ action 'create', ->
 
 action 'destroy', ->
     @bankAccount.destroyAccount (err) =>
-        if !err || String(err) is "Error: The model doesn't have an account"
+        if not err or String(err) is "Error: The model doesn't have an account"
             @bankAccount.destroy (err) =>
                 if err
                     railway.logger.write err
