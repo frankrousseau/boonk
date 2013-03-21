@@ -19,6 +19,7 @@ banks =
     "HSBC":"hsbc"
     "ING":"ing"
     "LCL":"lcl"
+    "Société génrale":"SocieteGenerale"
     
 reversed_banks = {}
 
