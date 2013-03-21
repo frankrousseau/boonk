@@ -61,16 +61,21 @@
     throw new Error('Cannot find module "' + name + '"');
   };
 
-  var define = function(bundle) {
-    for (var key in bundle) {
-      if (has(bundle, key)) {
-        modules[key] = bundle[key];
+  var define = function(bundle, fn) {
+    if (typeof bundle === 'object') {
+      for (var key in bundle) {
+        if (has(bundle, key)) {
+          modules[key] = bundle[key];
+        }
       }
+    } else {
+      modules[bundle] = fn;
     }
-  }
+  };
 
   globals.require = require;
   globals.require.define = define;
+  globals.require.register = define;
   globals.require.brunch = true;
 })();
 
@@ -9515,7 +9520,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 })( window );
 ;
-
 /*!
  * Lo-Dash v0.9.1 <http://lodash.com>
  * (c) 2012 John-David Dalton <http://allyoucanleet.com/>
@@ -13693,7 +13697,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   }
 }(this));
 ;
-
 //     Backbone.js 0.9.2
 
 //     (c) 2010-2012 Jeremy Ashkenas, DocumentCloud Inc.
@@ -15125,7 +15128,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
 }).call(this);;
-
 /**
  * |-------------------|
  * | Backbone-Mediator |
@@ -15328,7 +15330,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 });
 ;
-
 /* ===================================================
  * bootstrap-transition.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#transitions
@@ -17609,7 +17610,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }(window.jQuery);
 ;
-
 (function() {
   var WebSocket = window.WebSocket || window.MozWebSocket;
   var br = window.brunch || {};
@@ -17653,7 +17653,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 })();
 ;
-
 
 jade = (function(exports){
 /*!
@@ -17834,4 +17833,3 @@ exports.rethrow = function rethrow(err, filename, lineno){
 
 })({});
 ;
-

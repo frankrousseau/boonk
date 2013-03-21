@@ -61,20 +61,25 @@
     throw new Error('Cannot find module "' + name + '"');
   };
 
-  var define = function(bundle) {
-    for (var key in bundle) {
-      if (has(bundle, key)) {
-        modules[key] = bundle[key];
+  var define = function(bundle, fn) {
+    if (typeof bundle === 'object') {
+      for (var key in bundle) {
+        if (has(bundle, key)) {
+          modules[key] = bundle[key];
+        }
       }
+    } else {
+      modules[bundle] = fn;
     }
-  }
+  };
 
   globals.require = require;
   globals.require.define = define;
+  globals.require.register = define;
   globals.require.brunch = true;
 })();
 
-window.require.define({"collections/account_collection": function(exports, require, module) {
+window.require.register("collections/account_collection", function(exports, require, module) {
   var Account, AccountCollection,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -100,9 +105,8 @@ window.require.define({"collections/account_collection": function(exports, requi
 
   })(Backbone.Collection);
   
-}});
-
-window.require.define({"collections/balance_collection": function(exports, require, module) {
+});
+window.require.register("collections/balance_collection", function(exports, require, module) {
   var Balance, BalanceCollection,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -128,9 +132,8 @@ window.require.define({"collections/balance_collection": function(exports, requi
 
   })(Backbone.Collection);
   
-}});
-
-window.require.define({"initialize": function(exports, require, module) {
+});
+window.require.register("initialize", function(exports, require, module) {
   var _ref, _ref1, _ref2, _ref3, _ref4;
 
   if ((_ref = this.CozyApp) == null) {
@@ -163,9 +166,8 @@ window.require.define({"initialize": function(exports, require, module) {
     });
   });
   
-}});
-
-window.require.define({"lib/app_helpers": function(exports, require, module) {
+});
+window.require.register("lib/app_helpers", function(exports, require, module) {
   
   (function() {
     return (function() {
@@ -174,8 +176,8 @@ window.require.define({"lib/app_helpers": function(exports, require, module) {
       method = void 0;
       dummy = function() {};
       methods = 'assert,count,debug,dir,dirxml,error,exception,\
-                     group,groupCollapsed,groupEnd,info,log,markTimeline,\
-                     profile,profileEnd,time,timeEnd,trace,warn'.split(',');
+                   group,groupCollapsed,groupEnd,info,log,markTimeline,\
+                   profile,profileEnd,time,timeEnd,trace,warn'.split(',');
       _results = [];
       while (method = methods.pop()) {
         _results.push(console[method] = console[method] || dummy);
@@ -184,9 +186,8 @@ window.require.define({"lib/app_helpers": function(exports, require, module) {
     })();
   })();
   
-}});
-
-window.require.define({"lib/banks": function(exports, require, module) {
+});
+window.require.register("lib/banks", function(exports, require, module) {
   var acronym, bank, banks, reversed_banks;
 
   banks = {
@@ -210,7 +211,7 @@ window.require.define({"lib/banks": function(exports, require, module) {
     "HSBC": "hsbc",
     "ING": "ing",
     "LCL": "lcl",
-    "Société génrale": "SocieteGenerale"
+    "Société Générale": "SocieteGenerale"
   };
 
   reversed_banks = {};
@@ -224,9 +225,8 @@ window.require.define({"lib/banks": function(exports, require, module) {
 
   module.exports.reversed_banks = reversed_banks;
   
-}});
-
-window.require.define({"lib/view": function(exports, require, module) {
+});
+window.require.register("lib/view", function(exports, require, module) {
   var View,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -276,11 +276,10 @@ window.require.define({"lib/view": function(exports, require, module) {
 
   })(Backbone.View);
   
-}});
-
-window.require.define({"lib/view_collection": function(exports, require, module) {
+});
+window.require.register("lib/view_collection", function(exports, require, module) {
   var View, ViewCollection, methods,
-    _this = this,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -291,13 +290,9 @@ window.require.define({"lib/view_collection": function(exports, require, module)
     __extends(ViewCollection, _super);
 
     function ViewCollection() {
-      var _this = this;
-      this.renderAll = function() {
-        return ViewCollection.prototype.renderAll.apply(_this, arguments);
-      };
-      this.renderOne = function(model) {
-        return ViewCollection.prototype.renderOne.apply(_this, arguments);
-      };
+      this.renderAll = __bind(this.renderAll, this);
+
+      this.renderOne = __bind(this.renderOne, this);
       return ViewCollection.__super__.constructor.apply(this, arguments);
     }
 
@@ -423,9 +418,8 @@ window.require.define({"lib/view_collection": function(exports, require, module)
 
   module.exports = ViewCollection;
   
-}});
-
-window.require.define({"models/account": function(exports, require, module) {
+});
+window.require.register("models/account", function(exports, require, module) {
   var Account, reversed_banks,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -447,16 +441,15 @@ window.require.define({"models/account": function(exports, require, module) {
     };
 
     Account.prototype.isNew = function() {
-      return this.id == null;
+      return !(this.id != null);
     };
 
     return Account;
 
   })(Backbone.Model);
   
-}});
-
-window.require.define({"models/balance": function(exports, require, module) {
+});
+window.require.register("models/balance", function(exports, require, module) {
   var Balance, reversed_banks,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -478,16 +471,15 @@ window.require.define({"models/balance": function(exports, require, module) {
     };
 
     Balance.prototype.isNew = function() {
-      return this.id == null;
+      return !(this.id != null);
     };
 
     return Balance;
 
   })(Backbone.Model);
   
-}});
-
-window.require.define({"routers/app_router": function(exports, require, module) {
+});
+window.require.register("routers/app_router", function(exports, require, module) {
   var AppRouter,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -508,9 +500,8 @@ window.require.define({"routers/app_router": function(exports, require, module) 
 
   })(Backbone.Router);
   
-}});
-
-window.require.define({"views/account_view": function(exports, require, module) {
+});
+window.require.register("views/account_view", function(exports, require, module) {
   var AccountView, View,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -558,9 +549,8 @@ window.require.define({"views/account_view": function(exports, require, module) 
 
   })(View);
   
-}});
-
-window.require.define({"views/accounts_view": function(exports, require, module) {
+});
+window.require.register("views/accounts_view", function(exports, require, module) {
   var AccountCollection, AccountView, AccountsView, ViewCollection,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -591,11 +581,10 @@ window.require.define({"views/accounts_view": function(exports, require, module)
 
   })(ViewCollection);
   
-}});
-
-window.require.define({"views/app_view": function(exports, require, module) {
+});
+window.require.register("views/app_view", function(exports, require, module) {
   var Account, AccountsView, AppRouter, AppView, BalancesView, View, banks,
-    _this = this,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -616,13 +605,9 @@ window.require.define({"views/app_view": function(exports, require, module) {
     __extends(AppView, _super);
 
     function AppView() {
-      var _this = this;
-      this.onBalanceClicked = function() {
-        return AppView.prototype.onBalanceClicked.apply(_this, arguments);
-      };
-      this.onCreateClicked = function() {
-        return AppView.prototype.onCreateClicked.apply(_this, arguments);
-      };
+      this.onBalanceClicked = __bind(this.onBalanceClicked, this);
+
+      this.onCreateClicked = __bind(this.onCreateClicked, this);
       return AppView.__super__.constructor.apply(this, arguments);
     }
 
@@ -698,9 +683,8 @@ window.require.define({"views/app_view": function(exports, require, module) {
 
   })(View);
   
-}});
-
-window.require.define({"views/balance_view": function(exports, require, module) {
+});
+window.require.register("views/balance_view", function(exports, require, module) {
   var BalanceView, View,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -730,9 +714,8 @@ window.require.define({"views/balance_view": function(exports, require, module) 
 
   })(View);
   
-}});
-
-window.require.define({"views/balances_view": function(exports, require, module) {
+});
+window.require.register("views/balances_view", function(exports, require, module) {
   var BalanceCollection, BalanceView, BalancesView, ViewCollection,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -767,9 +750,8 @@ window.require.define({"views/balances_view": function(exports, require, module)
 
   })(ViewCollection);
   
-}});
-
-window.require.define({"views/templates/account": function(exports, require, module) {
+});
+window.require.register("views/templates/account", function(exports, require, module) {
   module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
   attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
   var buf = [];
@@ -779,9 +761,8 @@ window.require.define({"views/templates/account": function(exports, require, mod
   }
   return buf.join("");
   };
-}});
-
-window.require.define({"views/templates/balance": function(exports, require, module) {
+});
+window.require.register("views/templates/balance", function(exports, require, module) {
   module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
   attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
   var buf = [];
@@ -791,9 +772,8 @@ window.require.define({"views/templates/balance": function(exports, require, mod
   }
   return buf.join("");
   };
-}});
-
-window.require.define({"views/templates/home": function(exports, require, module) {
+});
+window.require.register("views/templates/home", function(exports, require, module) {
   module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
   attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
   var buf = [];
@@ -803,5 +783,4 @@ window.require.define({"views/templates/home": function(exports, require, module
   }
   return buf.join("");
   };
-}});
-
+});
