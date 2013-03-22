@@ -211,7 +211,7 @@ window.require.register("lib/banks", function(exports, require, module) {
     "HSBC": "hsbc",
     "ING": "ing",
     "LCL": "lcl",
-    "Société Générale": "SocieteGenerale"
+    "Société Générale": "societegenerale"
   };
 
   reversed_banks = {};
